@@ -28,5 +28,8 @@ export default {
 <style lang="scss">
 .new-note {
   text-align: center;
+  .btn {
+    margin: 10px;
+  }
 }
 </style>
