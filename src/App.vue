@@ -8,7 +8,7 @@
             <!-- new note -->
             <newNote :note="note" @addNote="addNote()" />
 
-            <div class="note-header">
+            <div class="note-header" style="margin: 36px 0">
 
               <!-- title -->
               <h3>{{ title }}</h3>
@@ -26,7 +26,7 @@
               </div>
             </div>
             <!-- note list -->
-            <notes :notes="notes" :grid="grid" @remove="removeNote"/>
+            <notes :notes="notesFilter" :grid="grid" @remove="removeNote"/>
           </div>
         </div>
       </section>
@@ -50,21 +50,25 @@ export default {
       grid: true,
       note: {
         title: '',
+        importance: 0,
         descr: '',
       },
       notes: [
         {
           title: 'First Note',
+          importance: 0,
           descr: 'Description for first note',
           date: new Date(Date.now()).toLocaleString(),
         },
         {
           title: 'Second Note',
+          importance: 1,
           descr: 'Description for Second note',
           date: new Date(Date.now()).toLocaleString(),
         },
         {
           title: 'Third Note',
+          importance: 2,
           descr: 'Description for Third note',
           date: new Date(Date.now()).toLocaleString(),
         },
@@ -77,19 +81,36 @@ export default {
     newNote,
     search,
   },
+  computed: {
+    notesFilter () {
+      let array = this.notes,
+      search = this.search;
+      if (!search) return array;
+      search = search.trim().toLowerCase();
+      array = array.filter(function(item) {
+        if (item.title.toLowerCase().indexOf(search) !== -1 || item.descr.toLowerCase().indexOf(search) !== -1) {
+          return item;
+        };
+
+      } )
+      return array;
+    },
+  },
   methods: {
     addNote() {
-      let {title, descr} = this.note;
+      let {title, descr, importance} = this.note;
       if (!title || !descr) {
-        this.message = 'Title or descr can not be empty';
+        this.message = 'Title or importance can not be empty';
         return;
       };
       this.notes.push({
         title,
+        importance,
         descr,
         date: new Date(Date.now()).toLocaleString(),
       });
       this.note.title = '';
+      this.note.importance = 0;
       this.note.descr = '';
       this.message = null;
     },

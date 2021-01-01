@@ -1,9 +1,15 @@
 <template>
   <div class="notes">
-    <div class="note" :class="{ full: !grid}" v-for="(note, index) in notes" :key="index">
+    <div class="note" :class="{
+      full: !grid,
+      green: note.importance === 0,
+      orange: note.importance === 1,
+      red: note.importance === 2,
+      }" v-for="(note, index) in notes" :key="index" >
       <div class="note-header" :class="{ full: !grid}">
         <p v-if="!grid"></p>
         <p>{{ note.title }}</p>
+        <p></p>
         <p style="cursor: pointer;" @click.prevent="removeNote(index)">X</p>
       </div>
       <div class="note-body">
@@ -25,6 +31,11 @@ export default {
       type: Boolean,
       required: true,
     }
+  },
+  computed: {
+    importance () {
+        console.log('orange') ;
+    },
   },
   methods: {
     removeNote(index) {
@@ -58,6 +69,15 @@ export default {
   &.full {
     width: 100%;
     text-align: center;
+  }
+  &.green {
+    background-color: rgba($color: green, $alpha: 0.18);
+  }
+  &.orange {
+    background-color: rgba($color: orange, $alpha: 0.18);
+  }
+  &.red {
+    background-color: rgba($color: red, $alpha: 0.18);
   }
 }
 .note-header {
