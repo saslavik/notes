@@ -2,20 +2,36 @@
   <div class="notes">
     <div class="note" :class="{
       full: !grid,
-      green: note.importance === 0,
+      green: note.importance !== 1 && note.importance !== 2,
       orange: note.importance === 1,
       red: note.importance === 2,
-      }" v-for="(note, index) in notes" :key="index" >
-      <div class="note-header" :class="{ full: !grid}">
+      }" v-for="(note, index) in notes" :key="index"
+      :id="index" >
+      <div class="note-header" :class="{ full: !grid}"
+        @dblclick.prevent="editNote(index)">
         <p v-if="!grid"></p>
         <p>{{ note.title }}</p>
-        <p></p>
         <p style="cursor: pointer;" @click.prevent="removeNote(index)">X</p>
       </div>
-      <div class="note-body">
+      <div v-show="inputEdit === index">
+        <input v-model="editTitle"
+        type="text"
+        placeholder="Title edit"
+        @keyup.enter="save(index)"
+        @keyup.esc="cancel">
+      </div>
+      <div class="note-body" >
         <p>{{ note.descr }}</p>
+        <input v-show="inputEdit === index"
+        v-model="editDescr"
+        type="text"
+
+        placeholder="Description edit"
+        @keyup.enter="save(index)"
+        @keyup.esc="cancel">
         <span>{{ note.date }}</span>
       </div>
+
     </div>
   </div>
 </template>
@@ -32,16 +48,46 @@ export default {
       required: true,
     }
   },
-  computed: {
-    importance () {
-        console.log('orange') ;
-    },
+  data() {
+    return {
+      inputEdit: -1,
+      editTitle: '',
+      editDescr: '',
+    };
+  },
+  mounted() {
+    document.addEventListener('click', this.onClick);
   },
   methods: {
+    onClick(event) {
+      if (event.target.id === this.inputEdit + '' ||
+      event.target.parentElement.id === this.inputEdit + '' ||
+      event.target.parentElement.parentElement.id === this.inputEdit + '') {
+        return;
+      }
+      else this.cancel();
+    },
     removeNote(index) {
       this.$emit('remove', index);
+    },
+    editNote(index) {
+      this.editTitle = '',
+      this.editDescr = '',
+      this.inputEdit = index;
+    },
+    save(index) {
+      if (!this.editTitle) return;
+      this.$emit('edit', index, this.editTitle, this.editDescr);
+      this.editNote(-1);
+    },
+    cancel() {
+      this.editNote(-1);
+    },
+    console() {
+      console.log('e');
+      console.log('t');
     }
-  }
+  },
 };
 </script>
 

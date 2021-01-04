@@ -26,7 +26,7 @@
               </div>
             </div>
             <!-- note list -->
-            <notes :notes="notesFilter" :grid="grid" @remove="removeNote"/>
+            <notes :notes="notesFilter" :grid="grid" @remove="removeNote" @edit="editNote"/>
           </div>
         </div>
       </section>
@@ -116,6 +116,11 @@ export default {
     },
     removeNote(index) {
       this.notes.splice(index, 1);
+    },
+    editNote(index, title, descr) {
+      this.notes[index].title = title;
+      this.notes[index].descr = descr;
+      this.notes[index].date = new Date(Date.now()).toLocaleString();
     }
   },
 }
