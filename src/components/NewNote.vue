@@ -23,14 +23,13 @@
 
 <script>
 export default {
-  props: {
-    note: {
-      type: Object,
-      required: true,
-    }
-  },
   data () {
     return {
+      note: {
+        title: '',
+        importance: 0,
+        descr: '',
+      },
       importance: [
         {id: 0, title: 'Обычное', checked: true},
         {id: 1, title: 'Важное', checked: false},
@@ -40,7 +39,18 @@ export default {
   },
   methods: {
     addNote() {
-      this.$emit('addNote', this.note)
+      let {title, descr, importance} = this.note;
+      if (!title || !descr) {
+        this.$emit('message', 'Title or importance can not be empty');
+        return;
+      };
+
+      this.$store.dispatch('addNote', {title: title, descr: descr, importance: importance});
+
+      this.note.title = '';
+      this.note.importance = 0;
+      this.note.descr = '';
+      this.$emit('message', null);
     },
   },
 };

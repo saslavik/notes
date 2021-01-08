@@ -6,7 +6,7 @@
           <div id="app">
             <message :message='message' v-if="message"/>
             <!-- new note -->
-            <newNote :note="note" @addNote="addNote()" />
+            <newNote @message='message = $event' />
 
             <div class="note-header" style="margin: 36px 0">
 
@@ -26,7 +26,7 @@
               </div>
             </div>
             <!-- note list -->
-            <notes :notes="notesFilter" :grid="grid" @remove="removeNote" @edit="editNote"/>
+            <notes :notes="notesFilter" :grid="grid" />
           </div>
         </div>
       </section>
@@ -44,35 +44,12 @@ import notes from '@/components/Notes.vue';
 export default {
   data() {
     return {
+      noteList: null,
       title: 'Notes app',
       search: '',
       message: null,
       grid: true,
-      note: {
-        title: '',
-        importance: 0,
-        descr: '',
-      },
-      notes: [
-        {
-          title: 'First Note',
-          importance: 0,
-          descr: 'Description for first note',
-          date: new Date(Date.now()).toLocaleString(),
-        },
-        {
-          title: 'Second Note',
-          importance: 1,
-          descr: 'Description for Second note',
-          date: new Date(Date.now()).toLocaleString(),
-        },
-        {
-          title: 'Third Note',
-          importance: 2,
-          descr: 'Description for Third note',
-          date: new Date(Date.now()).toLocaleString(),
-        },
-      ],
+
     };
   },
   components: {
@@ -81,9 +58,12 @@ export default {
     newNote,
     search,
   },
+  created() {
+    this.noteList = this.$store.getters.noteList;
+  },
   computed: {
     notesFilter () {
-      let array = this.notes,
+      let array = this.noteList,
       search = this.search;
       if (!search) return array;
       search = search.trim().toLowerCase();
@@ -95,33 +75,6 @@ export default {
       } )
       return array;
     },
-  },
-  methods: {
-    addNote() {
-      let {title, descr, importance} = this.note;
-      if (!title || !descr) {
-        this.message = 'Title or importance can not be empty';
-        return;
-      };
-      this.notes.push({
-        title,
-        importance,
-        descr,
-        date: new Date(Date.now()).toLocaleString(),
-      });
-      this.note.title = '';
-      this.note.importance = 0;
-      this.note.descr = '';
-      this.message = null;
-    },
-    removeNote(index) {
-      this.notes.splice(index, 1);
-    },
-    editNote(index, title, descr) {
-      this.notes[index].title = title;
-      this.notes[index].descr = descr;
-      this.notes[index].date = new Date(Date.now()).toLocaleString();
-    }
   },
 }
 </script>

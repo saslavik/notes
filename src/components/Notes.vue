@@ -1,12 +1,13 @@
 <template>
-  <div class="notes">
+  <div class="notes" @click.prevent="cancel()">
     <div class="note" :class="{
       full: !grid,
       green: note.importance !== 1 && note.importance !== 2,
       orange: note.importance === 1,
       red: note.importance === 2,
       }" v-for="(note, index) in notes" :key="index"
-      :id="index" >
+      :id="index"
+      @click.stop="">
       <div class="note-header" :class="{ full: !grid}"
         @dblclick.prevent="editNote(index)">
         <p v-if="!grid"></p>
@@ -56,19 +57,19 @@ export default {
     };
   },
   mounted() {
-    document.addEventListener('click', this.onClick);
+    document.body.addEventListener('keyup', e => {
+      if (e.key === 'Escape') this.cancel();
+    });
+    document.body.addEventListener('click', e => {
+      if (e.target.class !== 'note') this.cancel();
+    });
+    document.body.addEventListener('keyup', e => {
+      if (e.key === 'Enter' && this.inputEdit >= 0) this.save(this.inputEdit);
+    });
   },
   methods: {
-    onClick(event) {
-      if (event.target.id === this.inputEdit + '' ||
-      event.target.parentElement.id === this.inputEdit + '' ||
-      event.target.parentElement.parentElement.id === this.inputEdit + '') {
-        return;
-      }
-      else this.cancel();
-    },
     removeNote(index) {
-      this.$emit('remove', index);
+      this.$store.dispatch('removeNote', index);
     },
     editNote(index) {
       this.editTitle = '',
@@ -77,16 +78,12 @@ export default {
     },
     save(index) {
       if (!this.editTitle) return;
-      this.$emit('edit', index, this.editTitle, this.editDescr);
+      this.$store.dispatch('editNote', {index: index, title: this.editTitle, descr: this.editDescr});
       this.editNote(-1);
     },
     cancel() {
       this.editNote(-1);
     },
-    console() {
-      console.log('e');
-      console.log('t');
-    }
   },
 };
 </script>
