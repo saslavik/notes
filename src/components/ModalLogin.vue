@@ -60,15 +60,25 @@ export default {
       this.$v.$touch();
       if (!this.$v.$invalid) {
         const user = {
-          type: 'login',
           email: this.email,
           password: this.password,
         };
         console.log(user);
-        this.email = '';
-        this.password = '';
-        this.$v.$reset();
-        this.close();
+        this.$store.dispatch('authUser', user)
+          .then((res) => {
+            this.$v.$reset();
+            this.close();
+          })
+          .catch(e => {
+            user.email = '',
+            user.password = ''
+            console.log(e);
+          })
+        // console.log(user);
+        // this.email = '';
+        // this.password = '';
+        // this.$v.$reset();
+        // this.close();
       }
     },
     close() {

@@ -4,16 +4,6 @@
     @close="close()">
     <div slot="body">
       <form @submit.prevent="onSubmit">
-        <!-- name -->
-        <div class="form-item" :class="{ errorInput: $v.name.$error }">
-          <label>Name:</label>
-          <p class="errorText" v-if="!$v.name.required"> Field is required </p>
-          <p class="errorText" v-if="!$v.name.minLength">
-            Name must have at least {{ $v.name.$params.minLength.min }}!
-          </p>
-          <input v-model="name" :class="{ error: $v.name.$error }"
-          @change="$v.name.$touch()">
-        </div>
         <!-- email -->
         <div class="form-item" :class="{ errorInput: $v.email.$error }">
           <label>Email:</label>
@@ -65,7 +55,6 @@ export default {
   components: { modal },
   data() {
     return {
-      name: '',
       email: '',
       password: '',
       repeatPassword: '',
@@ -73,10 +62,6 @@ export default {
     };
   },
   validations: {
-    name: {
-      required,
-      minLength: minLength(4),
-    },
     email: {
       required,
       email,
@@ -94,19 +79,20 @@ export default {
       this.$v.$touch();
       if (!this.$v.$invalid) {
         const user = {
-          type: 'registration',
-          name: this.name,
           email: this.email,
           password: this.password,
         };
+        this.$store.dispatch('regUser', user)
+          .then((res) => {
+            this.$v.$reset();
+            this.close();
+          })
+          .catch(e => {
+            user.email = '',
+            user.password = ''
+            console.log(e);
+          })
         console.log(user);
-        this.notSame = false;
-        this.name = '';
-        this.email = '';
-        this.password = '';
-        this.repeatPassword = '';
-        this.$v.$reset();
-        this.close();
       } else if (this.$v.repeatPassword.$invalid) {
         this.$v.$reset();
         this.notSame = true;
