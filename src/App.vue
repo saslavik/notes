@@ -1,9 +1,26 @@
 <template>
   <div class="wrapper">
     <div class="wrapper-content">
+      <header>
+        <div class="logo">
+          <img src="https://3lhowb48prep40031529g5yj-wpengine.netdna-ssl.com/wp-content/uploads/2019/10/logo-vuejs-min.png" alt="Vue">
+        </div>
+        <div class="auth">
+          <span class="login" @click="login = true">
+            Login
+          </span>
+          <modalLogin v-show="login" @close="login = false" @change="changeModal()"/>
+          <!-- registration modal -->
+          <span class="login" @click="registration = true">
+            SignUp
+          </span>
+          <modalRegistration v-show="registration"
+          @close="registration = false"
+          @change="changeModal()" />
+        </div>
+      </header>
       <section>
         <div class="container">
-          <div id="app">
             <message :message='message' v-if="message"/>
             <!-- new note -->
             <newNote @message='message = $event' />
@@ -28,7 +45,6 @@
             <!-- note list -->
             <notes :notes="notesFilter" :grid="grid" />
           </div>
-        </div>
       </section>
     </div>
   </div>
@@ -40,6 +56,8 @@ import message from '@/components/Message.vue';
 import newNote from '@/components/NewNote.vue';
 import search from '@/components/Search.vue';
 import notes from '@/components/Notes.vue';
+import modalLogin from '@/components/ModalLogin.vue';
+import modalRegistration from '@/components/ModalRegistration.vue';
 
 export default {
   data() {
@@ -49,13 +67,16 @@ export default {
       search: '',
       message: null,
       grid: true,
-
+      login: false,
+      registration: false,
     };
   },
   components: {
     message,
     notes,
     newNote,
+    modalLogin,
+    modalRegistration,
     search,
   },
   created() {
@@ -76,5 +97,47 @@ export default {
       return array;
     },
   },
+  methods: {
+    changeModal() {
+      this.login = !this.login;
+      this.registration = !this.registration;
+    },
+  },
 }
 </script>
+<style>
+
+.wrapper {
+  align-items: center;
+}
+
+.wrapper-content {
+  width: 960px;
+}
+
+header {
+  display: flex;
+  padding: 10px 0 !important;
+  justify-content: space-between;
+}
+
+.logo {
+  width: 120px;
+}
+.auth {
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.login {
+  display: block;
+  line-height: 100%;
+  align-items: center;
+  cursor: pointer;
+}
+p.changeModal {
+  font-size: 12px !important;
+  margin: 20px 0 !important;
+}
+</style>
