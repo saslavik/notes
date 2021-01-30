@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
+import moment from 'moment';
 
 Vue.use(Vuex);
 
@@ -59,7 +60,7 @@ export default new Vuex.Store({
       .catch(e => console.log(e));
     },
     authUser({commit, dispatch}, authData) {
-      const key = 'AIzaSyCu77Ngra3M7e7zzB2eVyriMUQsRGoKgAo'
+      const key = 'AIzaSyDJ9UweV7XCHDm2IX2KoNkfCaPO4IaZK6g'
       return axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${key}`, {
         email: authData.email,
         password: authData.password,
@@ -89,7 +90,7 @@ export default new Vuex.Store({
       note.title = title,
       note.descr = descr,
       note.importance = importance,
-      note.date = new Date(Date.now()).toLocaleString();
+      note.date = moment();
       return axios.post(`https://notes-app-556f0-default-rtdb.firebaseio.com/${state.login}.json`, note)
         .then(() => {
           dispatch('getPosts')

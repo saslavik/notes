@@ -25,6 +25,7 @@
         </div>
       </header>
       <mainComponent v-if="$store.getters.getToken"/>
+      <description v-if="!$store.getters.getToken"/>
     </div>
   </div>
 
@@ -34,6 +35,7 @@
 import mainComponent from '@/components/Main.vue';
 import modalLogin from '@/components/ModalLogin.vue';
 import modalRegistration from '@/components/ModalRegistration.vue';
+import description from '@/components/Description.vue';
 
 export default {
   data() {
@@ -46,6 +48,7 @@ export default {
     mainComponent,
     modalLogin,
     modalRegistration,
+    description
   },
   created() {
     this.$store.dispatch('setToken')

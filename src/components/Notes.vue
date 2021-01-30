@@ -30,7 +30,10 @@
         placeholder="Description edit"
         @keyup.enter="save(note.id, index)"
         @keyup.esc="cancel">
-        <span>{{ note.date }}</span>
+        <div class="time">
+          <span>{{ when(note.date) }}</span>
+          <span>{{ fromNow(note.date) }}</span>
+        </div>
       </div>
 
     </div>
@@ -38,6 +41,7 @@
 </template>
 
 <script>
+
 export default {
   props: {
     notes: {
@@ -89,6 +93,12 @@ export default {
     cancel() {
       this.editNote(null);
     },
+    when(date) {
+      return this.$moment(date).lang('ru').format('LLL')
+    },
+    fromNow(date) {
+      return this.$moment(date).fromNow();
+    }
   },
 };
 </script>
@@ -167,6 +177,10 @@ export default {
   span {
     font-size: 14px;
     color: #999;
+  }
+  .time {
+    display: flex;
+    justify-content: space-between;
   }
 }
 </style>
