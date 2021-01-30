@@ -1,19 +1,23 @@
 # vue-cli
 
-## Project setup
+## 1 скопируйте проект
+
 ```
-npm install
+git clone https://github.com/saslavik/notes.git
+
+## 2 установите необходимые компоненты
 ```
 
-### Compiles and hot-reloads for development
+npm i
+
+## 3 запустите проект
+
 ```
 npm run serve
+
+## 4 перейдите на сайт
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
+http://localhost:8080/
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 5 зарегистрируйтесь на сайте
