@@ -42,7 +42,7 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    regUser({commit}, authData) {
+    regUser({commit, dispatch}, authData) {
       const key = 'AIzaSyDJ9UweV7XCHDm2IX2KoNkfCaPO4IaZK6g'
       return axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${key}`, {
         email: authData.email,
@@ -54,10 +54,11 @@ export default new Vuex.Store({
         localStorage.setItem('token', res.data.idToken)
         commit('setToken')
         commit('setLogin')
+        dispatch('getPosts')
       })
       .catch(e => console.log(e));
     },
-    authUser({commit}, authData) {
+    authUser({commit, dispatch}, authData) {
       const key = 'AIzaSyCu77Ngra3M7e7zzB2eVyriMUQsRGoKgAo'
       return axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${key}`, {
         email: authData.email,
@@ -69,6 +70,7 @@ export default new Vuex.Store({
         localStorage.setItem('token', res.data.idToken)
         commit('setToken')
         commit('setLogin')
+        dispatch('getPosts')
       })
       .catch(e => console.log(e));
     },
