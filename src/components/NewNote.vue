@@ -6,7 +6,7 @@
       <input type="text" v-model="note.title">
     </div>
     <div class="half">
-      <p>Важность:</p>
+      <p>Importance:</p>
       <div v-for="item in importance" :key="item.id" class="importance" >
         <input v-model="note.importance" type="radio" :id="item.id"
         name="importance" :value="item.id" :checked="item.id === 0" >
@@ -31,9 +31,9 @@ export default {
         descr: '',
       },
       importance: [
-        {id: 0, title: 'Обычное', checked: true},
-        {id: 1, title: 'Важное', checked: false},
-        {id: 2, title: 'Безотлагательное', checked: false}
+        {id: 0, title: 'Basic', checked: true},
+        {id: 1, title: 'Important', checked: false},
+        {id: 2, title: 'HOT', checked: false}
       ]
     };
   },

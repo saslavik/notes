@@ -7,42 +7,39 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     token: null,
-    notes: [
-      {
-        title: 'First Note',
-        importance: 0,
-        descr: 'Description for first note',
-        date: new Date(Date.now()).toLocaleString(),
-      },
-      {
-        title: 'Second Note',
-        importance: 1,
-        descr: 'Description for Second note',
-        date: new Date(Date.now()).toLocaleString(),
-      },
-      {
-        title: 'Third Note',
-        importance: 2,
-        descr: 'Description for Third note',
-        date: new Date(Date.now()).toLocaleString(),
-      },
-    ],
+    login: null,
+    notes: [],
   },
   mutations: {
+    setNotes(state, notes) {
+      state.notes = notes
+    },
     removeNote(state, index) {
       state.notes.splice(index, 1);
     },
-    editNote(state, {index, title, descr}) {
-      state.notes[index].title = title;
-      state.notes[index].descr = descr;
-      state.notes[index].date = new Date(Date.now()).toLocaleString();
+    editNote(state, {index, note}) {
+      state.notes[index].title = note.title;
+      state.notes[index].descr = note.descr;
+      state.notes[index].date = note.date;
     },
-    addNote(state, {title, descr, importance}) {
-      state.notes.push({title: title, descr: descr, importance: importance, date: new Date(Date.now()).toLocaleString()});
+    addNote(state, note) {
+      state.notes.push(note);
     },
-    setToken(state, token) {
-      state.token = token;
+    setToken(state) {
+      state.token = localStorage.getItem('token');
     },
+    setLogin(state) {
+      state.login = localStorage.getItem('login');
+    },
+    logout(state) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('login');
+      state.token = null;
+      state.login = null;
+    },
+    setName(state, name) {
+      state.login = name;
+    }
   },
   actions: {
     regUser({commit}, authData) {
@@ -53,7 +50,10 @@ export default new Vuex.Store({
         returnSecureToken: true
       })
       .then((res) => {
-        commit('setToken', res.data.idToken)
+        localStorage.setItem('login', res.data.localId)
+        localStorage.setItem('token', res.data.idToken)
+        commit('setToken')
+        commit('setLogin')
       })
       .catch(e => console.log(e));
     },
@@ -65,23 +65,65 @@ export default new Vuex.Store({
         returnSecureToken: true
       })
       .then((res) => {
-        commit('setToken', res.data.idToken)
+        localStorage.setItem('login', res.data.localId)
+        localStorage.setItem('token', res.data.idToken)
+        commit('setToken')
+        commit('setLogin')
       })
       .catch(e => console.log(e));
     },
-    removeNote({commit}, payload) {
-      commit('removeNote', payload);
+    getPosts({commit, state}) {
+      return axios.get(`https://notes-app-556f0-default-rtdb.firebaseio.com/${state.login}.json`)
+        .then(res => {
+          const notesArray = []
+          for (let key in res.data) {
+            notesArray.push({...res.data[key], id: key})
+          }
+          commit('setNotes', notesArray);
+        })
     },
-    editNote({commit}, payload) {
-      commit('editNote', payload);
+    addNote({state, dispatch}, {title, descr, importance}) {
+      let note = {}
+      note.title = title,
+      note.descr = descr,
+      note.importance = importance,
+      note.date = new Date(Date.now()).toLocaleString();
+      return axios.post(`https://notes-app-556f0-default-rtdb.firebaseio.com/${state.login}.json`, note)
+        .then(() => {
+          dispatch('getPosts')
+        })
     },
-    addNote({commit}, payload) {
-      commit('addNote', payload);
+    removeNote({state, dispatch, commit}, {id, index}) {
+      commit('removeNote', index)
+      return axios.delete(`https://notes-app-556f0-default-rtdb.firebaseio.com/${state.login}/${id}.json`)
+        .then(() => {
+          dispatch('getPosts')
+        })
+    },
+    editNote({commit, state, dispatch}, {note, id, index}) {
+      note.date = new Date(Date.now()).toLocaleString();
+      commit('editNote', {index, note});
+      return axios.put(`https://notes-app-556f0-default-rtdb.firebaseio.com/${state.login}/${id}.json`, note)
+      .then(() => {
+        dispatch('getPosts')
+      })
+    },
+    setToken({commit}) {
+      commit('setToken')
+    },
+    setLogin({commit}) {
+      commit('setLogin')
+    },
+    logout({commit}) {
+      commit('logout')
     }
   },
   getters: {
     noteList(state) {
       return state.notes;
+    },
+    getToken(state) {
+      return state.token;
     }
   },
 });

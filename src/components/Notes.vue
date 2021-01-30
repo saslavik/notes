@@ -5,30 +5,30 @@
       green: note.importance !== 1 && note.importance !== 2,
       orange: note.importance === 1,
       red: note.importance === 2,
-      }" v-for="(note, index) in notes" :key="index"
-      :id="index"
+      }" v-for="(note, index) in notes" :key="note.id"
+      :id="note.id"
       @click.stop="">
       <div class="note-header" :class="{ full: !grid}"
-        @dblclick.prevent="editNote(index)">
+        @dblclick.prevent="editNote(note.id)">
         <p v-if="!grid"></p>
         <p>{{ note.title }}</p>
-        <p style="cursor: pointer;" @click.prevent="removeNote(index)">X</p>
+        <p style="cursor: pointer;" @click.prevent="removeNote(note.id, index)">X</p>
       </div>
-      <div v-show="inputEdit === index">
+      <div v-show="inputEdit === note.id">
         <input v-model="editTitle"
         type="text"
         placeholder="Title edit"
-        @keyup.enter="save(index)"
+        @keyup.enter="save(note.id, index)"
         @keyup.esc="cancel">
       </div>
       <div class="note-body" >
         <p>{{ note.descr }}</p>
-        <input v-show="inputEdit === index"
+        <input v-show="inputEdit === note.id"
         v-model="editDescr"
         type="text"
 
         placeholder="Description edit"
-        @keyup.enter="save(index)"
+        @keyup.enter="save(note.id, index)"
         @keyup.esc="cancel">
         <span>{{ note.date }}</span>
       </div>
@@ -68,21 +68,26 @@ export default {
     });
   },
   methods: {
-    removeNote(index) {
-      this.$store.dispatch('removeNote', index);
+    removeNote(id, index) {
+      const note = {id, index}
+      this.$store.dispatch('removeNote', note);
     },
-    editNote(index) {
+    editNote(id) {
       this.editTitle = '',
       this.editDescr = '',
-      this.inputEdit = index;
+      this.inputEdit = id;
     },
-    save(index) {
+    save(id, index) {
       if (!this.editTitle) return;
-      this.$store.dispatch('editNote', {index: index, title: this.editTitle, descr: this.editDescr});
-      this.editNote(-1);
+      const note = {};
+      note.title = this.editTitle,
+      note.descr = this.editDescr;
+
+      this.$store.dispatch('editNote', {note, id, index});
+      this.editNote(null);
     },
     cancel() {
-      this.editNote(-1);
+      this.editNote(null);
     },
   },
 };
